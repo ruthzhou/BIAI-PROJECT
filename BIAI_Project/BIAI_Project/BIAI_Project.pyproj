@@ -34,6 +34,7 @@
     <Compile Include="src\task1_maze\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\task2_cartpole\cartpole_mutation.py" />
     <Compile Include="src\task2_cartpole\cartpole_policy.py" />
     <Compile Include="src\task2_cartpole\train_ga.py" />
     <Compile Include="src\task2_cartpole\__init__.py">

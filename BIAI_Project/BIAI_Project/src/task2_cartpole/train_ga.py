@@ -6,19 +6,28 @@ import os
 from src.common.ga_base import GeneticAlgorithm
 from src.common.selection import tournament_selection
 from src.common.crossover import uniform_crossover
-from src.common.mutation import random_mutation
+
+from src.task2_cartpole.cartpole_mutation import cartpole_mutation
 from src.task2_cartpole.cartpole_policy import LinearPolicy
+
 
 env = gym.make("CartPole-v1")
 
+
 def fitness(individual):
+
     policy = LinearPolicy(individual)
-    obs, _ = env.reset()
+
+    observation, _ = env.reset()
+
     total_reward = 0
 
-    for _ in range(200):
-        action = policy.act(obs)
-        obs, reward, done, truncated, _ = env.step(action)
+    for _ in range(500):
+
+        action = policy.act(observation)
+
+        observation, reward, done, truncated, _ = env.step(action)
+
         total_reward += reward
 
         if done or truncated:
@@ -26,28 +35,62 @@ def fitness(individual):
 
     return total_reward
 
+
 ga = GeneticAlgorithm(
-    pop_size=20,
+    pop_size=100,
     num_genes=4,
     fitness_func=fitness,
     selection_func=tournament_selection,
     crossover_func=uniform_crossover,
-    mutation_func=random_mutation,
-    gene_space=[-1, 0, 1]
+    mutation_func=cartpole_mutation,
+    gene_space=[0],
+    mutation_rate=0.1,
+    elitism_count=5
 )
 
-population, history = ga.run(50)
+best_solution, best_fitness, history = ga.run(
+    generations=200
+)
 
-os.makedirs("results/task2", exist_ok=True)
+print("\nFINAL RESULTS")
+print("Best Fitness:", best_fitness)
 
-# SAVE REWARD GRAPH
+print("\nBest Weights:")
+print(best_solution)
+
+os.makedirs(
+    "results/task2",
+    exist_ok=True
+)
+
+plt.figure(figsize=(10, 5))
+
 plt.plot(history)
+
 plt.title("Reward Over Generations")
-plt.savefig("results/task2/reward_history.png")
+plt.xlabel("Generation")
+plt.ylabel("Reward")
+
+plt.grid(True)
+
+plt.savefig(
+    "results/task2/reward_history.png"
+)
+
 plt.close()
 
-# SAVE BEST RESULT
-with open("results/task2/best_result.txt", "w") as f:
-    f.write(f"Best fitness: {max(history)}\n")
+with open(
+    "results/task2/best_result.txt",
+    "w"
+) as file:
 
-print("Training complete. Check results folder.")
+    file.write(
+        f"Best Fitness: {best_fitness}\n"
+    )
+
+    file.write(
+        f"Best Weights:\n{best_solution}"
+    )
+
+print("\nTraining complete.")
+print("Check results/task2/")

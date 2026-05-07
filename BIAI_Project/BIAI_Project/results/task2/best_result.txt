@@ -1,1 +1,3 @@
-Best fitness: 200.0
+Best Fitness: 500.0
+Best Weights:
+[ 0 -1  1  0]
